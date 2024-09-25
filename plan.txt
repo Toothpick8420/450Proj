@@ -1,0 +1,12 @@
+1st:
+make version that is playable locally
+needed:
+        define board, white and black pieces, empty spaces
+        list of valid moves
+        way to select move
+        detect win
+2nd:
+make version that is playable on the website
+
+3rd:
+make version that improves upon randomly selected valid move
