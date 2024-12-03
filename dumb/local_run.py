@@ -11,7 +11,7 @@
 ## 4. Create an initial board state to be played on
 
 ##Replace these imports with the file(s) that contain your ai(s)
-from main import Rando, MiniMaximus
+from main import AI, Rando, MiniMaximus
 
 
 def get_winner(board_state):
@@ -48,7 +48,8 @@ def simulate_game(board_state,
     turn = 'B'
     get_move = black_get_move
     print_board(board_state)
-    while True:
+    while True:  
+        AI.print_board(board_state)
         ## GET ACTION ##
         next_action = get_move(board_size=board_size,
                                board_state=board_state,
@@ -56,33 +57,39 @@ def simulate_game(board_state,
                                time_left=0,
                                opponent_time_left=0)
         print("turn: ", turn, "next action: ", next_action)
-        _ = input()
+        # _ = input()
         ## CHECK FOR BLOCKED PLAYER ##
         if next_action is None:
             if player_blocked:
                 print("Both players blocked!")
-            break
+                break
+            else:
+                player_blocked = True
+                turn, get_move = prepare_next_turn(turn,
+                                               white_get_move,
+                                               black_get_move)
+                continue
         else:
-            player_blocked = True
+            player_blocked = False
+            ## APPLY ACTION ##
+            ## Replace this function with your own apply function
+
+            # NOTE: Action is applied in get_move currently 
+            # but it looks like we should change that based on comments
+
+            # board_state = main.apply_action(board_state=board_state, 
+            #                                action=next_action,
+            #                                turn=turn)
+
+            #print_board(board_state)
             turn, get_move = prepare_next_turn(turn,
                                                white_get_move,
                                                black_get_move)
-            continue
-    else:
-        player_blocked = False
-        ## APPLY ACTION ##
-        ## Replace this function with your own apply function
-        board_state = main.apply_action(board_state=board_state,
-                                        action=next_action,
-                                        turn=turn)
-        print_board(board_state)
-        turn, get_move = prepare_next_turn(turn,
-                                           white_get_move,
-                                           black_get_move)
-        winner, white_score, black_score = get_winner(board_state)
-        print("Winner: ", winner)
-        print("White score: ", white_score)
-        print("Black score: ", black_score)
+
+    winner, white_score, black_score = get_winner(board_state)
+    print("Winner: ", winner)
+    print("White score: ", white_score)
+    print("Black score: ", black_score)
 
 
 if __name__ == "__main__":
@@ -94,5 +101,6 @@ if __name__ == "__main__":
     board_size = 4
     ## Give these the get_move functions from whatever ais you want to test
     white_get_move = Rando.get_move
-    black_get_move = MiniMaximus.get_move
+    black_get_move = Rando.get_move
+    #black_get_move = MiniMaximus.get_move
     simulate_game(board_state, board_size, white_get_move, black_get_move)
