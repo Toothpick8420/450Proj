@@ -8,17 +8,19 @@ human = white #default human to be white moves
 class AI:
     def __init__(self):
         pass
+
     def get_move(self, board_size, board_state,
                  turn, time_left=0, opponent_time_left=0):
         pass
-    def print_board(b):
+
+    def print_board(self, b):
         l = len(b) * '+-' + '+'
         print(l)
         for row in b:
             print('|' + '|'.join([str(_) for _ in row]) + '|')
             print(l)
         return
-    def valid_moves(b, p):
+    def valid_moves(self, b, p):
         #b is board, p is what palyer it is
         #returns a list of valid moves for that player
         #numba << look into this 
@@ -42,10 +44,12 @@ class AI:
                         #else:
                         #    print("r:",r0,"c:",c0)
         return ret
-    def move(b, p):
+    def move(self, b, p):
+        n = len(b)
+
         #b is board, p is player
         #changes board and returns void
-        vm = valid_moves(b, p)
+        vm = self.valid_moves(b, p)
         if vm == []: #When no valid moves
             return
         if p == computer:
@@ -72,8 +76,8 @@ class AI:
                         b[r1][c1] = p
                         r1, c1 = r1 + dr, c1 + dc
         return
-    def win(b): #returns who won (free if tie) or false if no winner yet
-        if valid_moves(b, white) == [] and valid_moves(b, black) == []:
+    def win(self, b): #returns who won (free if tie) or false if no winner yet
+        if self.valid_moves(b, white) == [] and self.valid_moves(b, black) == []:
             w_c = 0
             b_c = 0
             n = len(b)
@@ -92,7 +96,7 @@ class AI:
 class Rando(AI):
     def __init__(self):
         pass
-    def get_move(self, board_size, board_state,
+    def get_move(board_size, board_state,
                  turn, time_left=0, opponent_time_left=0):
         pass
     pass
@@ -100,7 +104,7 @@ class Rando(AI):
 class MiniMaximus(AI):
     def __init__(self):
         pass
-    def get_move(self, board_size, board_state,
+    def get_move(board_size, board_state,
                  turn, time_left=0, opponent_time_left=0):
         pass
     pass

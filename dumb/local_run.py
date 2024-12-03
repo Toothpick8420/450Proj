@@ -11,9 +11,8 @@
 ## 4. Create an initial board state to be played on
 
 ##Replace these imports with the file(s) that contain your ai(s)
-import main
-import Rando
-import MiniMaximus
+from main import Rando, MiniMaximus
+
 
 def get_winner(board_state):
     black_score = 0
