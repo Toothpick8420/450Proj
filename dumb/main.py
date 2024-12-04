@@ -1,6 +1,7 @@
+import random
 #global defaults
-white = "w"
-black = "b"
+white = "W"
+black = "B"
 free = " " #open space
 computer = black #default computer to be black moves
 human = white #default human to be white moves
@@ -8,9 +9,13 @@ human = white #default human to be white moves
 class AI:
     def __init__(self):
         pass
+
+
     def get_move(self, board_size, board_state,
                  turn, time_left=0, opponent_time_left=0):
         pass
+
+
     def print_board(b):
         l = len(b) * '+-' + '+'
         print(l)
@@ -18,6 +23,8 @@ class AI:
             print('|' + '|'.join([str(_) for _ in row]) + '|')
             print(l)
         return
+
+
     def valid_moves(b, p):
         #b is board, p is what palyer it is
         #returns a list of valid moves for that player
@@ -42,18 +49,11 @@ class AI:
                         #else:
                         #    print("r:",r0,"c:",c0)
         return ret
-    def move(b, p):
+    #n is board size, b board state, p turn, move is (r, c) of move to do
+    def move(n, b, p, move):
         #b is board, p is player
         #changes board and returns void
-        vm = valid_moves(b, p)
-        if vm == []: #When no valid moves
-            return
-        if p == computer:
-            (r, c) = vm[0] #when computer is playing, plays first detected move
-        else:
-            r = int(input("row: "))#asks player for move... should move this out
-            c = int(input("col: "))
-            #going to assume they moved correctly...
+        r, c = move
         b[r][c] = p
         for (dr, dc) in [(+0, +1), (-1, +1), (-1, +0), (-1, -1),
                          (+0, -1), (+1, -1), (+1, +0), (+1, +1)]:
@@ -72,35 +72,30 @@ class AI:
                         b[r1][c1] = p
                         r1, c1 = r1 + dr, c1 + dc
         return
-    def win(b): #returns who won (free if tie) or false if no winner yet
-        if valid_moves(b, white) == [] and valid_moves(b, black) == []:
-            w_c = 0
-            b_c = 0
-            n = len(b)
-            for row in b:
-                w_c += row.count(white)
-                b_c += row.count(black)
-                if w_c > b_c:
-                    return white
-                elif w_c < b_c:
-                    return black
-                else:
-                    return free
-        return False
-    
+ 
     
 class Rando(AI):
     def __init__(self):
-        pass
-    def get_move(self, board_size, board_state,
+        return
+
+    # turn is player whose turn it is, B or W
+    def get_move(board_size, board_state,
                  turn, time_left=0, opponent_time_left=0):
-        pass
-    pass
+
+        moves = AI.valid_moves(board_state, turn)
+        if (moves == []):
+            return None
+
+        random_move = random.choice(moves)
+        AI.move(board_size, board_state, turn, random_move)
+        #board_state[random_move[0]][random_move[1]] = turn
+        return random_move
+
 
 class MiniMaximus(AI):
     def __init__(self):
         pass
-    def get_move(self, board_size, board_state,
+    def get_move(board_size, board_state,
                  turn, time_left=0, opponent_time_left=0):
         pass
     pass
