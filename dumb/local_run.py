@@ -29,7 +29,7 @@ def get_winner(board_state):
         winner = 'W'
     else:
         winner = None
-        return (winner, white_score, black_score)
+    return (winner, white_score, black_score)
     
 def prepare_next_turn(turn, white_get_move, black_get_move):
     next_turn = 'W' if turn == 'B' else 'B'
@@ -85,7 +85,6 @@ def simulate_game(board_state,
             turn, get_move = prepare_next_turn(turn,
                                                white_get_move,
                                                black_get_move)
-
     winner, white_score, black_score = get_winner(board_state)
     print("Winner: ", winner)
     print("White score: ", white_score)
