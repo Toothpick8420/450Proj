@@ -11,7 +11,7 @@
 ## 4. Create an initial board state to be played on
 
 ##Replace these imports with the file(s) that contain your ai(s)
-from main import AI, Rando, MiniMaximus
+from main import *
 
 
 def get_winner(board_state):
@@ -49,7 +49,7 @@ def simulate_game(board_state,
     get_move = black_get_move
     print_board(board_state)
     while True:  
-        AI.print_board(board_state)
+        print_board(board_state)
         ## GET ACTION ##
         next_action = get_move(board_size=board_size,
                                board_state=board_state,
@@ -99,7 +99,7 @@ if __name__ == "__main__":
                    [' ', ' ', ' ', ' ']]
     board_size = 4
     ## Give these the get_move functions from whatever ais you want to test
-    white_get_move = Rando.get_move
-    black_get_move = Rando.get_move
+    white_get_move = get_move
+    black_get_move = get_move
     #black_get_move = MiniMaximus.get_move
     simulate_game(board_state, board_size, white_get_move, black_get_move)
