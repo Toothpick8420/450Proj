@@ -58,10 +58,10 @@ def move(n, b, p, move):
             r0, c0 = r0 + dr, c0 + dc
             flag = True
             if 0 <= r0 < n and 0 <= c0 < n and b[r0][c0] == p and flag:
-                print("between rows",r,r0, "between col",c,c0)
+                #print("between rows",r,r0, "between col",c,c0)
                 r1, c1 = r, c
                 while r1 != r0 or c1 != c0:
-                    print("r1:",r1,"c1:",c1)
+                    #print("r1:",r1,"c1:",c1)
                     b[r1][c1] = p
                     r1, c1 = r1 + dr, c1 + dc
     return
