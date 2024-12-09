@@ -1,11 +1,11 @@
 
 from copy import deepcopy
-from main import *
+from board_helper import *
 
 
 # Used in construction to make sure we don't just build every possible board 
 # because the branch factor gets large
-MAX_DEPTH = 15
+MAX_DEPTH = 5
 # Used in print but I wanted to be able to have variablity from just \t
 TAB_STRING = '    '
 
@@ -17,17 +17,13 @@ TAB_STRING = '    '
 # A Node that contains a board and all successors 
 class BoardNode():
     
-    def __init__(self, board=[], turn=None, depth=0):
-        # If its whites turn the last turn was black -> used to set whose 
-        # board this is for score 
-        # when we score the board we need to make sure that its scored as our turn
-        last_turn = white if turn == black else black
-
+    def __init__(self, board=[], turn=None, parent_move=None, depth=0):
         self.board = board
         self.n = len(self.board)
         self.children = []
-        self.value = score_board(board, last_turn)
+        self.value = score_board(board)
         self.moves = valid_moves(self.board, turn)
+        self.parent_move = parent_move
 
         if (depth < MAX_DEPTH):
             # Generate the next available boards for each move
@@ -38,11 +34,31 @@ class BoardNode():
                 # Toggle the turn so that its not just repeatedly making white 
                 # moves, it actually builds out the tree back and forth
                 next_turn = white if turn == black else black
-                self.children.append(BoardNode(next_board, next_turn, depth+1))
+                self.children.append(BoardNode(next_board, next_turn, mv, depth+1))
 
         return # Explicit return for printing
 
 
+    # Misc helper functions
+
+    # Return true if this is a terminal node, aka no chilren or children == []
+    def is_terminal(self):
+        return len(self.children) == 0
+
+    # Return the value of the board
+    def get_value(self):
+        return (self.value)
+
+    # Return the list of children
+    def successors(self):
+        return self.children
+
+    # Action is the move that results in this state, aka parent_move
+    def action(self):
+        return self.parent_move
+
+
+    # Pretty printing of the tree
     def print(self, depth=0):
         # Helper function -> prints board adding indent level infront of it
         def print_board_(self, depth_):
@@ -57,7 +73,8 @@ class BoardNode():
         
         # print the current states board and its score
         print_board_(self, depth)
-        print((TAB_STRING * depth) + str(self.value))
+        print((TAB_STRING * depth) + str(self.value) + " " + str(self.parent_move))
+        print()
 
         # print all children 1 level deeper
         for child in self.children: 
@@ -70,23 +87,58 @@ class BoardNode():
 # Takes in a board and turn 
 # Calculates the score of the board from the view of the turn 
 # so if its 
-def score_board(board, turn):
-    max_player = turn 
-    min_player = white if turn == black else black
-
+def score_board(board):
     # Represents the value of the board
     score = 0
 
     # Iterate over the board checking
     for row in board:
         for col in row:
-            if col == max_player:
+            if col == white:
                 score += 1
-            elif col == min_player:
+            elif col == black:
                 score -= 1
 
     # add scores to get the difference between them 
     return score 
+
+
+# Minmax function 
+def min_max(boardNode, turn, depth=0):
+    
+    if (boardNode.is_terminal()):
+        return (boardNode.action(), boardNode.get_value())
+
+    # White = Max
+    if turn == white:
+        max = None
+        max_action = None
+
+        for node in boardNode.successors():
+            action_value = min_max(node, black, depth+1)
+
+            a, v = action_value
+
+            if (max == None or v > max):
+                max = v
+                max_action = node.action()
+
+        return (max_action, max)
+
+    else: # Black = Min
+        min = None
+        min_action = None
+
+        for node in boardNode.successors():
+            action_value = min_max(node, white, depth+1)
+
+            a, v = action_value
+
+            if (min == None or v < min):
+                min = v
+                min_action = node.action()
+
+        return (min_action, min)
 
 
 if __name__ == "__main__":
@@ -97,4 +149,6 @@ if __name__ == "__main__":
                    [' ', ' ', ' ', ' ']]
 
     node = BoardNode(board=board_state, turn=white, depth=0)
+
     node.print()
+    print(min_max(node, white))
