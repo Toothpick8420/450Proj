@@ -65,3 +65,13 @@ def move(n, b, p, move):
     return
 
 
+# Make board n x n
+def make_board(n):
+    
+    board = [[' ' for _ in range(n)] for _ in range(n)]
+    board[n//2-1][n//2-1] = "W"
+    board[n//2][n//2-1]   = "B"
+    board[n//2-1][n//2]   = "B"
+    board[n//2][n//2]     = "W"
+
+    return board

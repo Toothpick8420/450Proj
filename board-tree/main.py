@@ -21,11 +21,11 @@ def min_max_get_move(board_size, board_state, turn,
 
     node = BoardNode(board=board_state, turn=turn)
     
-    mm_move, val = min_max(node, turn)
+    mm_move, val = min_max(node, "MIN")
     if (mm_move == None):
         return None
 
-    move(board_size, board_state, turn, mm_move)
+    move(board_size, board_state, turn,  mm_move)
 
     return mm_move
 

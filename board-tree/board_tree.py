@@ -5,9 +5,13 @@ from board_helper import *
 
 # Used in construction to make sure we don't just build every possible board 
 # because the branch factor gets large
-MAX_DEPTH = 5
+MAX_DEPTH = 3
 # Used in print but I wanted to be able to have variablity from just \t
 TAB_STRING = '    '
+
+
+# FIXME: Change the way min_max works so that it isn't just black negative
+# white positive but that its based on turn, whoevers turn is max  
 
 
 # Black is negative numbers 
@@ -21,7 +25,7 @@ class BoardNode():
         self.board = board
         self.n = len(self.board)
         self.children = []
-        self.value = score_board(board)
+        self.value = score_board(board, turn)
         self.moves = valid_moves(self.board, turn)
         self.parent_move = parent_move
 
@@ -87,38 +91,50 @@ class BoardNode():
 # Takes in a board and turn 
 # Calculates the score of the board from the view of the turn 
 # so if its 
-def score_board(board):
+def score_board(board, turn):
     # Represents the value of the board
     score = 0
 
-    # Iterate over the board checking
-    for row in board:
-        for col in row:
-            if col == white:
-                score += 1
-            elif col == black:
-                score -= 1
+    # heuristics
+    # I don't know what to do for weights but we will put like 5 on corners
+    corners = [(0, len(board)-1), (len(board)-1, len(board)-1), (len(board)-1, 0), (0, 0)]
+    corner_weight = 1000
+    
+    # Check corners
+    for r, c in corners:
+        if board[r][c] == turn:
+            score += corner_weight
 
-    # add scores to get the difference between them 
+    # mobility
+    score += len(valid_moves(board, turn))
+   
+    # value based on hesutrics 
     return score 
+
+
+
 
 
 # Minmax function 
 def min_max(boardNode, turn, depth=0):
     
     if (boardNode.is_terminal()):
+
         return (boardNode.action(), boardNode.get_value())
 
     # White = Max
-    if turn == white:
+    if turn == "MAX":
         max = None
         max_action = None
 
         for node in boardNode.successors():
-            action_value = min_max(node, black, depth+1)
+
+
+            action_value = min_max(node, "MIN", depth+1)
+
 
             a, v = action_value
-
+            
             if (max == None or v > max):
                 max = v
                 max_action = node.action()
@@ -130,7 +146,7 @@ def min_max(boardNode, turn, depth=0):
         min_action = None
 
         for node in boardNode.successors():
-            action_value = min_max(node, white, depth+1)
+            action_value = min_max(node, "MAX", depth+1)
 
             a, v = action_value
 
@@ -142,6 +158,10 @@ def min_max(boardNode, turn, depth=0):
 
 
 if __name__ == "__main__":
+
+    print_board(make_board(8))
+
+    '''
     ## Replace with whatever board size you want to run on
     board_state = [[' ', ' ', ' ', ' '],
                    [' ', 'W', 'B', ' '],
@@ -152,3 +172,4 @@ if __name__ == "__main__":
 
     node.print()
     print(min_max(node, white))
+    '''
