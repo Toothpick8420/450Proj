@@ -98,7 +98,7 @@ def score_board(board, turn):
     # heuristics
     # I don't know what to do for weights but we will put like 5 on corners
     corners = [(0, len(board)-1), (len(board)-1, len(board)-1), (len(board)-1, 0), (0, 0)]
-    corner_weight = 1000
+    corner_weight = 50
     
     # Check corners
     for r, c in corners:
@@ -112,12 +112,14 @@ def score_board(board, turn):
     return score 
 
 
+# Minmax function ab 
+global ab_states_processed
+ab_states_processed = 0
 
+def min_max_ab(boardNode, turn, alpha, beta):
+    global ab_states_processed 
+    ab_states_processed += 1
 
-
-# Minmax function 
-def min_max(boardNode, turn, depth=0):
-    
     if (boardNode.is_terminal()):
 
         return (boardNode.action(), boardNode.get_value())
@@ -130,11 +132,66 @@ def min_max(boardNode, turn, depth=0):
         for node in boardNode.successors():
 
 
-            action_value = min_max(node, "MIN", depth+1)
-
+            action_value = min_max_ab(node, "MIN", alpha, beta)
 
             a, v = action_value
-            
+        
+         
+            if (max == None or v > max):
+                max = v
+                max_action = node.action()
+
+            if v >= beta: return (max_action, max)
+
+            alpha = alpha if alpha > v else v
+        
+
+        return (max_action, max)
+
+    else: # Black = Min
+        min = None
+        min_action = None
+
+        for node in boardNode.successors():
+            action_value = min_max_ab(node, "MAX", alpha, beta)
+
+            a, v = action_value
+
+            if (min == None or v < min):
+                min = v
+                min_action = node.action()
+
+            if v <= alpha: return (min_action, min)
+
+            beta = beta if beta < v else v
+
+        return (min_action, min)
+
+
+global mm_states_processed 
+mm_states_processed = 0
+
+def min_max(boardNode, turn):
+    global mm_states_processed 
+    mm_states_processed += 1
+
+    if (boardNode.is_terminal()):
+
+        return (boardNode.action(), boardNode.get_value())
+
+    # White = Max
+    if turn == "MAX":
+        max = None
+        max_action = None
+
+        for node in boardNode.successors():
+
+
+            action_value = min_max(node, "MIN")
+
+            a, v = action_value
+        
+         
             if (max == None or v > max):
                 max = v
                 max_action = node.action()
@@ -146,7 +203,7 @@ def min_max(boardNode, turn, depth=0):
         min_action = None
 
         for node in boardNode.successors():
-            action_value = min_max(node, "MAX", depth+1)
+            action_value = min_max(node, "MAX")
 
             a, v = action_value
 
@@ -157,19 +214,20 @@ def min_max(boardNode, turn, depth=0):
         return (min_action, min)
 
 
+
+
+
 if __name__ == "__main__":
 
-    print_board(make_board(8))
 
-    '''
-    ## Replace with whatever board size you want to run on
-    board_state = [[' ', ' ', ' ', ' '],
-                   [' ', 'W', 'B', ' '],
-                   [' ', 'B', 'W', ' '],
-                   [' ', ' ', ' ', ' ']]
+    board_state = make_board(8)
 
     node = BoardNode(board=board_state, turn=white, depth=0)
 
     node.print()
+
+    print(min_max_ab(node, white, -10000000, 10000000))
     print(min_max(node, white))
-    '''
+
+    print(ab_states_processed)
+    print(mm_states_processed)

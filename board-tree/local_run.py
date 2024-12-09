@@ -49,7 +49,7 @@ def simulate_game(board_state,
     turn = 'B'
     get_move = black_get_move
     while True:  
-        #print_board(board_state)
+        print_board(board_state)
         ## GET ACTION ##
         next_action = get_move(board_size=board_size,
                                board_state=board_state,
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     board_size8 = 8
     board_state8 = make_board(board_size8)
     ## Give these the get_move functions from whatever ais you want to test
-    white_get_move = min_max_get_move
-    black_get_move = get_move
+    white_get_move = get_move
+    black_get_move = ab_get_move
     #black_get_move = MiniMaximus.get_move
     simulate_game(board_state8, board_size8, white_get_move, black_get_move)
