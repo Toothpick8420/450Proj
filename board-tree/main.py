@@ -15,20 +15,6 @@ def get_move(board_size, board_state,
     #board_state[random_move[0]][random_move[1]] = turn
     return random_move
 
-# min_max get move
-def min_max_get_move(board_size, board_state, turn, 
-                    time_left=0, opponent_time_left=0):
-
-    node = BoardNode(board=board_state, turn=turn)
-   
-    mm_move, val = min_max(node, "MIN")
-    if (mm_move == None):
-        return None
-
-    move(board_size, board_state, turn,  mm_move)
-
-    return mm_move
-
 # ab get move 
 def ab_get_move(board_size, board_state, turn,
                 time_left=0, opponent_time_left=0):
