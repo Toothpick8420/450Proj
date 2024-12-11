@@ -1,6 +1,6 @@
 import random
 from board_helper import *
-from board_tree import *
+from BoardNode import *
 
 # turn is player whose turn it is, B or W
 def get_move(board_size, board_state,
@@ -33,12 +33,15 @@ def min_max_get_move(board_size, board_state, turn,
 def ab_get_move(board_size, board_state, turn,
                 time_left=0, opponent_time_left=0):
 
-    node = BoardNode(board=board_state, turn=turn)
+    node = BoardNode(board=board_state)
  
     inf = float('inf')
     neg_inf = float('-inf')
 
-    ab_move, val = min_max_ab(node, "MIN", neg_inf, inf)
+    max_player = turn 
+    min_player = white if turn == black else black
+
+    ab_move, val = min_max_ab(node, max_player, min_player, "MAX", neg_inf, inf)
     if (ab_move == None):
         return None
 

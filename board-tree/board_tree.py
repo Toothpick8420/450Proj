@@ -22,12 +22,17 @@ TAB_STRING = '    '
 class BoardNode():
     
     def __init__(self, board=[], turn=None, parent_move=None, depth=0):
+        next_turn = white if turn == black else black
+
         self.board = board
         self.n = len(self.board)
         self.children = []
         self.value = score_board(board, turn)
         self.moves = valid_moves(self.board, turn)
         self.parent_move = parent_move
+        self.turn = turn
+        self.next_turn = next_turn
+
 
         if (depth < MAX_DEPTH):
             # Generate the next available boards for each move
@@ -37,7 +42,6 @@ class BoardNode():
 
                 # Toggle the turn so that its not just repeatedly making white 
                 # moves, it actually builds out the tree back and forth
-                next_turn = white if turn == black else black
                 self.children.append(BoardNode(next_board, next_turn, mv, depth+1))
 
         return # Explicit return for printing
@@ -51,7 +55,7 @@ class BoardNode():
 
     # Return the value of the board
     def get_value(self):
-        return (self.value)
+        return score_board(self.board, self.next_turn)
 
     # Return the list of children
     def successors(self):
@@ -97,13 +101,27 @@ def score_board(board, turn):
 
     # heuristics
     # I don't know what to do for weights but we will put like 5 on corners
-    corners = [(0, len(board)-1), (len(board)-1, len(board)-1), (len(board)-1, 0), (0, 0)]
-    corner_weight = 50
+    n = len(board) - 1
+    corners = {
+            (0, n) : [(0, n-1), (1, n-1), (1, n)], 
+            (n, n) : [(n-1, n), (n-1, n-1), (n, n-1)], 
+            (n, 0) : [(n-1, 0), (n-1, 1), (n, 1)], 
+            (0, 0) : [(1,1), (0,1), (1,0)],
+
+    }
+    corner_weight = 5
     
     # Check corners
-    for r, c in corners:
+    for corner, surrounding in corners.items():
+        r, c = corner
         if board[r][c] == turn:
             score += corner_weight
+        elif board[r][c] == free:
+            for sr, sc in surrounding:
+                if board[sr][sc] == turn:
+                    score -= (corner_weight - 1)
+                elif board[sr][sc] == turn:
+                    score += (corner_weight - 1)
 
     # mobility
     score += len(valid_moves(board, turn))
