@@ -19,7 +19,7 @@ def get_move(board_size, board_state,
 def ab_get_move(board_size, board_state, turn,
                 time_left=0, opponent_time_left=0):
 
-    node = BoardNode(board=board_state)
+    node = BoardNode(board=board_state, turn=turn)
  
     inf = float('inf')
     neg_inf = float('-inf')

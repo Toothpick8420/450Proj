@@ -10,7 +10,7 @@ TAB_STRING = '    '
 
 class BoardNode():
 
-    def __init__(self, board=[], parent_move=None, depth=0):
+    def __init__(self, board=[], turn=None, parent_move=None, depth=0):
         self.action=parent_move;
 
         self.board = board
@@ -23,17 +23,20 @@ class BoardNode():
 
         if (depth < MAX_DEPTH):
             self.terminal = False
+            both = True if turn == None else False
             # White moves
-            for mv in valid_moves(self.board, white):
-                new_board = deepcopy(self.board)
-                move(self.n, new_board, white, mv)
-                self.white_next_states.append(BoardNode(new_board, mv, depth + 1))
+            if (turn == white or both):
+                for mv in valid_moves(self.board, white):
+                    new_board = deepcopy(self.board)
+                    move(self.n, new_board, white, mv)
+                    self.white_next_states.append(BoardNode(new_board, black, mv, depth + 1))
 
             # Black moves
-            for mv in valid_moves(self.board, black):
-                new_board = deepcopy(self.board)
-                move(self.n, new_board, black, mv)
-                self.black_next_states.append(BoardNode(new_board, mv, depth + 1))
+            if(turn == black or both):
+                for mv in valid_moves(self.board, black):
+                    new_board = deepcopy(self.board)
+                    move(self.n, new_board, black, mv)
+                    self.black_next_states.append(BoardNode(new_board, white, mv, depth + 1))
 
 
     # Return the board state 
@@ -60,6 +63,21 @@ class BoardNode():
     def get_action(self):
         return self.action
 
+heuristic8x8 = [[100, -10,   8,   6,   6,   8, -10, 100],
+             [-10, -25,  -4,  -4,  -4,  -4, -25, -10],
+             [  8,  -4,   6,   4,   4,   6,  -4,   8],
+             [  6,  -4,   4,   0,   0,   4,  -4,   6],
+             [  6,  -4,   4,   0,   0,   4,  -4,   6],
+             [  8,  -4,   6,   4,   4,   6,  -4,   8],
+             [-10, -25,  -4,  -4,  -4,  -4, -25, -10],
+             [100, -10,   8,   6,   6,   8, -10, 100]]
+
+heuristic6x6 =  [[100, -20,   8,   8, -20, 100],
+                 [-20,  -6,   4,   4,  -6, -20],
+                 [  8,   4,   0,   0,   4,   8],
+                 [  8,   4,   0,   0,   4,   8],
+                 [-20,  -6,   4,   4,  -6, -20],
+                 [100, -20,   8,   8, -20, 100]]
 
 # Score a board state, turn == max -> other == min player
 def score_board(boardNode, turn):
@@ -67,11 +85,28 @@ def score_board(boardNode, turn):
     min_player = white if turn == black else black
 
     board = boardNode.state()
+    n = len(board)
     
     # the value of the board
     score = 0
 
     # Heuristics 
+
+    if (n == 8):
+        for r, row in enumerate(board):
+            for c, spot in enumerate(row):
+                if spot == max_player:
+                    score += heuristic8x8[r][c];
+                else:
+                    score -= heuristic8x8[r][c];
+    elif (n == 6):
+        for r, row in enumerate(board):
+            for c, spot in enumerate(row):
+                if spot == max_player:
+                    score += heuristic6x6[r][c];
+                else:
+                    score -= heuristic6x6[r][c];
+    '''
     n = len(board) - 1
 
     # Corners
@@ -96,6 +131,8 @@ def score_board(boardNode, turn):
                     score -= (corner_weight - 1)
                 elif board[sr][sc] == min_player:
                     score += (corner_weight - 1)
+
+    '''
 
     # mobility
     score += len(boardNode.successors(max_player))
